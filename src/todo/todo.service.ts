@@ -13,11 +13,21 @@ export class TodoService {
   ) {}
 
   async findOrFailFor(id: Todo['id'], user: User) {
-    return await this.todoRepository.findOneOrFail({ id, user });
+    return await this.todoRepository.findOneOrFail({
+      id,
+      user,
+    });
   }
 
   async findAllFor(user: User) {
-    return await this.todoRepository.find({ user });
+    return await this.todoRepository.find(
+      { user },
+      {
+        orderBy: {
+          id: 'DESC',
+        },
+      },
+    );
   }
 
   async createFor(todoParams: TodoDto, user: User) {
