@@ -6,12 +6,15 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ tableName: 'users' })
 export class User {
+  @ApiProperty({ minimum: 1 })
   @PrimaryKey({ autoincrement: true })
   id!: number;
 
+  @ApiProperty()
   @Property({ unique: true })
   email!: string;
 

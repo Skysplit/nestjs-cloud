@@ -14,6 +14,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiParam, ApiResponse } from '@nestjs/swagger';
 
 import { TodoDto } from './todo.dto';
 import { Todo } from './todo.entity';
@@ -22,6 +23,7 @@ import { TodoService } from './todo.service';
 @Controller('todos')
 @UseGuards(JwtGuard)
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+@ApiBearerAuth()
 export class TodoController {
   constructor(private todoService: TodoService) {}
 
@@ -35,6 +37,8 @@ export class TodoController {
     return await this.todoService.createFor(todo, user);
   }
 
+  @ApiParam({ name: 'id', description: 'Todo item id', type: 'number' })
+  @ApiResponse({ type: () => Todo })
   @Put(':id')
   async update(
     @CurrentUser() user: User,
@@ -44,6 +48,7 @@ export class TodoController {
     return this.todoService.updateFor(id, todo, user);
   }
 
+  @ApiParam({ name: 'id', description: 'Todo item id', type: 'number' })
   @Delete(':id')
   async delete(
     @CurrentUser() user: User,
