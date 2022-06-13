@@ -27,11 +27,13 @@ import { TodoService } from './todo.service';
 export class TodoController {
   constructor(private todoService: TodoService) {}
 
+  @ApiResponse({ type: () => Todo, isArray: true })
   @Get()
   list(@CurrentUser() user: User) {
     return this.todoService.findAllFor(user);
   }
 
+  @ApiResponse({ type: () => Todo })
   @Post()
   async create(@CurrentUser() user: User, @Body() todo: TodoDto) {
     return await this.todoService.createFor(todo, user);
@@ -49,6 +51,7 @@ export class TodoController {
   }
 
   @ApiParam({ name: 'id', description: 'Todo item id', type: 'number' })
+  @ApiResponse({ type: () => Todo })
   @Delete(':id')
   async delete(
     @CurrentUser() user: User,
