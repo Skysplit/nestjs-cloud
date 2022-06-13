@@ -1,6 +1,6 @@
 import { DatabaseConfig, DatabaseConfigType } from '@app/db/db.config';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { Module } from '@nestjs/common';
+import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -13,12 +13,13 @@ import { ConfigModule } from '@nestjs/config';
           type: 'postgresql',
           entities: ['./dist/**/*.entity.js'],
           entitiesTs: ['./src/**/*.entity.ts'],
-          registerRequestContext: false,
           clientUrl: config.databaseUrl,
+          findOneOrFailHandler(entityName: string) {
+            return new NotFoundException(`${entityName} not found`);
+          },
         };
       },
     }),
-    MikroOrmModule.forMiddleware(),
   ],
 })
 export class DbModule {}
