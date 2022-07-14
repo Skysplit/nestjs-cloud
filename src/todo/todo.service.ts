@@ -1,3 +1,4 @@
+import { TenantService } from '@app/tenant/tenant.service';
 import { User } from '@app/user/user.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,7 +10,8 @@ import { Todo } from './todo.entity';
 @Injectable()
 export class TodoService {
   constructor(
-    @InjectRepository(Todo) private todoRepository: Repository<Todo>,
+    @InjectRepository(Todo) private readonly todoRepository: Repository<Todo>,
+    private readonly tenantService: TenantService,
   ) {}
 
   async findOrFailFor(id: Todo['id'], user: User) {
@@ -17,6 +19,7 @@ export class TodoService {
       where: {
         id,
         user,
+        tenant: await this.tenantService.findCurrent(),
       },
     });
   }
@@ -25,6 +28,7 @@ export class TodoService {
     return await this.todoRepository.find({
       where: {
         user,
+        tenant: await this.tenantService.findCurrent(),
       },
       order: {
         id: 'desc',
@@ -36,6 +40,7 @@ export class TodoService {
     const todo = this.todoRepository.create({
       ...todoParams,
       user,
+      tenant: await this.tenantService.findCurrent(),
     });
 
     return await this.todoRepository.save(todo);

@@ -12,7 +12,9 @@ export class TenantService {
     @InjectRepository(Tenant)
     private readonly tenantRepository: Repository<Tenant>,
     @Inject(REQUEST) private readonly request: Request,
-  ) {}
+  ) {
+    console.log('constructor called');
+  }
 
   async findCurrent() {
     const tenantId = this.request.headers['x-tenant-id'] as string | undefined;
