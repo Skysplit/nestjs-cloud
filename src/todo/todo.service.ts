@@ -1,7 +1,7 @@
 import { User } from '@app/user/user.entity';
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { TodoDto } from './todo.dto';
 import { Todo } from './todo.entity';
@@ -9,25 +9,27 @@ import { Todo } from './todo.entity';
 @Injectable()
 export class TodoService {
   constructor(
-    @InjectRepository(Todo) private todoRepository: EntityRepository<Todo>,
+    @InjectRepository(Todo) private todoRepository: Repository<Todo>,
   ) {}
 
   async findOrFailFor(id: Todo['id'], user: User) {
     return await this.todoRepository.findOneOrFail({
-      id,
-      user,
+      where: {
+        id,
+        user,
+      },
     });
   }
 
   async findAllFor(user: User) {
-    return await this.todoRepository.find(
-      { user },
-      {
-        orderBy: {
-          id: 'DESC',
-        },
+    return await this.todoRepository.find({
+      where: {
+        user,
       },
-    );
+      order: {
+        id: 'desc',
+      },
+    });
   }
 
   async createFor(todoParams: TodoDto, user: User) {
@@ -36,17 +38,14 @@ export class TodoService {
       user,
     });
 
-    await this.todoRepository.persistAndFlush(todo);
-
-    return todo;
+    return await this.todoRepository.save(todo);
   }
 
   async updateFor(id: Todo['id'], todoParams: TodoDto, user: User) {
     const todo = await this.findOrFailFor(id, user);
+    const updatedTodo = this.todoRepository.merge(todo, todoParams);
 
-    this.todoRepository.assign(todo, todoParams);
-
-    this.todoRepository.persistAndFlush(todo);
+    await this.todoRepository.save(updatedTodo);
 
     return todo;
   }
@@ -54,7 +53,7 @@ export class TodoService {
   async deleteFor(id: Todo['id'], user: User) {
     const todo = await this.findOrFailFor(id, user);
 
-    this.todoRepository.removeAndFlush(todo);
+    await this.todoRepository.delete(todo);
 
     return todo;
   }

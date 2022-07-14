@@ -1,29 +1,27 @@
 import { Todo } from '@app/todo/todo.entity';
-import {
-  Collection,
-  Entity,
-  OneToMany,
-  PrimaryKey,
-  Property,
-} from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity({ tableName: 'users' })
+@Entity({ name: 'users' })
 export class User {
   @ApiProperty({ minimum: 1 })
-  @PrimaryKey({ autoincrement: true })
+  @PrimaryGeneratedColumn()
   id!: number;
 
   @ApiProperty()
-  @Property({ unique: true })
+  @Column()
+  @Index()
   email!: string;
 
-  @Property({ unique: true, hidden: true })
+  @Column({ unique: true })
   externalId!: string;
 
-  @OneToMany({
-    entity: () => Todo,
-    mappedBy: 'user',
-  })
-  todos = new Collection<Todo>(this);
+  @OneToMany(() => Todo, (todo) => todo.user)
+  todos!: Todo[];
 }

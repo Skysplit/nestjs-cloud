@@ -1,32 +1,30 @@
+import { Tenant } from '@app/tenant/tenant.entity';
 import { User } from '@app/user/user.entity';
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { ApiProperty } from '@nestjs/swagger';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ tableName: 'todos' })
+@Entity({ name: 'todos' })
 export class Todo {
   @ApiProperty({ minimum: 1 })
-  @PrimaryKey({ autoincrement: true })
+  @PrimaryGeneratedColumn()
   id!: number;
 
   @ApiProperty()
-  @Property()
+  @Column()
   name!: string;
 
   @ApiProperty()
-  @Property({ type: 'text' })
+  @Column({ type: 'text' })
   description!: string;
 
   @ApiProperty()
-  @Property({ type: 'boolean' })
+  @Column()
   completed!: boolean;
 
   @ApiProperty({ type: () => User })
-  @ManyToOne({
-    entity: () => User,
-    onDelete: 'cascade',
-    serializer(user: User) {
-      return user;
-    },
-  })
+  @ManyToOne(() => User, (user) => user.todos)
   user!: User;
+
+  @ManyToOne(() => Tenant)
+  tenant!: Tenant;
 }
