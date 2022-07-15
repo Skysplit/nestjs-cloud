@@ -6,14 +6,15 @@ import { Repository } from 'typeorm';
 
 import { Tenant } from './tenant.entity';
 
-@Injectable({ scope: Scope.REQUEST, durable: true })
+@Injectable({ scope: Scope.REQUEST, durable: false })
 export class TenantService {
   constructor(
     @InjectRepository(Tenant)
     private readonly tenantRepository: Repository<Tenant>,
     @Inject(REQUEST) private readonly request: Request,
   ) {
-    console.log('constructor called');
+    console.log({ request });
+    console.log('Tenant service created');
   }
 
   async findCurrent() {

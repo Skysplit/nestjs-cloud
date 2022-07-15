@@ -12,7 +12,9 @@ export class TodoService {
   constructor(
     @InjectRepository(Todo) private readonly todoRepository: Repository<Todo>,
     private readonly tenantService: TenantService,
-  ) {}
+  ) {
+    console.log('Todo service created');
+  }
 
   async findOrFailFor(id: Todo['id'], user: User) {
     return await this.todoRepository.findOneOrFail({

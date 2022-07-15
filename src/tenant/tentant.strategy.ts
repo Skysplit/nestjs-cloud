@@ -6,6 +6,9 @@ import {
 } from '@nestjs/core';
 import { Request } from 'express';
 
+// 1 -> contextId1
+// 2 -> contextId2
+// X -> {randomContextId}
 const tenantContextIdsMap = new Map<string, ContextId>();
 
 export class TenantStrategy implements ContextIdStrategy {
